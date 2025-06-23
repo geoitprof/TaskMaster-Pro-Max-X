@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TaskMaster Pro Max - To-Do List</title>
+    <title>TaskMaster Pro Max X - Enhanced</title>
     <style>
         /* CSS RESET */
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -38,12 +38,11 @@
             font-weight: 700;
             letter-spacing: 1px;
         }
-        nav.navbar p {
-            font-size: 1em;
-            opacity: 0.8;
-            margin-left: 18px;
+        nav.navbar .theme-controls {
+            display: flex;
+            align-items: center;
+            gap: 12px;
         }
-        .toggle-switch { margin-left: 24px; }
 
         /* LAYOUT */
         .main-content {
@@ -140,6 +139,20 @@
             outline: none;
         }
 
+        /* SEARCH AND SORT BAR */
+        .search-sort-bar {
+            display: flex;
+            gap: 16px;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+        .search-sort-bar input {
+            flex: 1;
+        }
+        .search-sort-bar select {
+            min-width: 200px;
+        }
+
         /* TASKS */
         .tasks-container {
             background: #fff;
@@ -162,6 +175,10 @@
         .task-item.completed {
             opacity: 0.6;
             background: #f4f7fa;
+        }
+        .task-item:hover {
+            background: #f8f9fa;
+            transform: translateY(-1px);
         }
         .task-checkbox {
             width: 22px;
@@ -188,6 +205,7 @@
             gap: 10px;
             font-size: 0.92em;
             color: #666;
+            flex-wrap: wrap;
         }
         .priority-badge {
             padding: 2px 10px;
@@ -212,17 +230,31 @@
             display: flex;
             gap: 10px;
         }
+
+        /* Action buttons - icon style */
         .action-btn {
+            padding: 8px;
+            min-width: 36px;
+            min-height: 36px;
+            border-radius: 50%;
+            background: transparent;
+            color: #0a2259;
+            border: none;
+            box-shadow: none;
+            transition: background 0.2s, color 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2em;
+        }
+        .action-btn.edit-btn { color: #1e88e5; }
+        .action-btn.delete-btn { color: #e53935; }
+        .action-btn:hover {
             background: #eaf0fa;
             color: #0a2259;
-            border: 1.5px solid #d1d9e6;
-            padding: 8px 12px;
-            border-radius: 6px;
-            font-size: 0.95em;
         }
-        .action-btn.edit-btn { background: #1e88e5; color: #fff; border: none; }
-        .action-btn.delete-btn { background: #e53935; color: #fff; border: none; }
-        .action-btn:hover { filter: brightness(0.95); }
+        .action-btn.edit-btn:hover { background: #e3f2fd; color: #1565c0; }
+        .action-btn.delete-btn:hover { background: #ffebee; color: #b71c1c; }
 
         /* STATS */
         .stats {
@@ -261,11 +293,25 @@
             padding: 8px 16px;
             border-radius: 6px;
             font-size: 1em;
+            cursor: pointer;
+            transition: all 0.2s;
         }
-        .pagination-btn.active, .pagination-btn:hover {
+        .pagination-btn.active {
             background: #0a2259;
             color: #fff;
             border-color: #0a2259;
+        }
+        .pagination-btn:hover:not(.active) {
+            background: #d1d9e6;
+        }
+        .pagination-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        .pagination-info {
+            font-size: 0.9em;
+            color: #666;
+            margin: 0 16px;
         }
 
         /* MODAL */
@@ -311,6 +357,13 @@
             color: #999;
         }
 
+        /* INPUT GROUP */
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
         /* ANIMATIONS */
         @keyframes fadeInTask {
             from { opacity: 0; transform: translateY(-10px); }
@@ -320,27 +373,118 @@
             from { opacity: 1; transform: translateY(0); }
             to { opacity: 0; transform: translateY(10px); }
         }
+        @keyframes slideInRight {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        /* DOWNLOAD BUTTON */
+        .download-btn {
+            background: #0a2259;
+            color: #fff;
+            border: none;
+            border-radius: 50%;
+            width: 48px;
+            height: 48px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 8px rgba(10,34,89,0.10);
+            font-size: 1.5em;
+            cursor: pointer;
+            transition: background 0.2s, color 0.2s, box-shadow 0.2s;
+            margin: 0 auto;
+        }
+        .download-btn:hover {
+            background: #1e3a8a;
+            color: #fff;
+            box-shadow: 0 4px 16px rgba(10,34,89,0.13);
+        }
+
+        /* SWITCH */
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 48px;
+            height: 26px;
+            vertical-align: middle;
+        }
+        .switch input { display: none; }
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: #d1d9e6;
+            border-radius: 26px;
+            transition: background 0.3s;
+        }
+        .slider:before {
+            position: absolute;
+            content: '';
+            height: 20px;
+            width: 20px;
+            left: 3px;
+            bottom: 3px;
+            background: #fff;
+            border-radius: 50%;
+            box-shadow: 0 1px 4px rgba(10,34,89,0.10);
+            transition: transform 0.3s;
+        }
+        .switch input:checked + .slider {
+            background: #0a2259;
+        }
+        .switch input:checked + .slider:before {
+            transform: translateX(22px);
+        }
+        .switch-label {
+            margin-left: 12px;
+            font-size: 1em;
+            font-weight: 500;
+            color: #fff;
+            vertical-align: middle;
+        }
 
         /* RESPONSIVE */
         @media (max-width: 1100px) {
             .main-content {
                 flex-direction: column;
                 gap: 24px;
-                padding: 96px 8px 24px 8px;
+                padding: 96px 16px 24px 16px;
             }
             .sidebar-left, .sidebar-right {
                 flex: 1 1 100%;
                 max-width: 100%;
-                padding: 18px 8px;
             }
         }
         @media (max-width: 768px) {
-            nav.navbar { flex-direction: column; height: auto; padding: 12px 8px; }
-            .main-content { padding: 80px 2px 10px 2px; }
-            .sidebar-left, .sidebar-right, .center-content { padding: 10px 2px; }
-            .card, .tasks-container { padding: 10px 2px; }
+            nav.navbar { 
+                flex-direction: column; 
+                height: auto; 
+                padding: 12px 16px;
+                gap: 12px;
+            }
+            .main-content { padding: 120px 8px 16px 8px; }
+            .search-sort-bar {
+                flex-direction: column;
+                gap: 12px;
+            }
+            .search-sort-bar input,
+            .search-sort-bar select {
+                width: 100%;
+            }
             .stats { grid-template-columns: 1fr; }
+            .pagination {
+                flex-wrap: wrap;
+                gap: 8px;
+            }
+            .pagination-info {
+                width: 100%;
+                text-align: center;
+                order: -1;
+                margin: 0 0 12px 0;
+            }
         }
+
         /* DARK MODE */
         body.dark-mode {
             background: #181a1b;
@@ -350,7 +494,9 @@
             background: #10182f;
             color: #fff;
         }
-        body.dark-mode .card, body.dark-mode .tasks-container, body.dark-mode .modal-content {
+        body.dark-mode .card, 
+        body.dark-mode .tasks-container, 
+        body.dark-mode .modal-content {
             background: #23272a !important;
             color: #f1f1f1 !important;
         }
@@ -358,16 +504,34 @@
             background: #1a1d1f !important;
             color: #f1f1f1 !important;
         }
-        body.dark-mode .add-btn, body.dark-mode .action-btn, body.dark-mode #downloadReportBtn, body.dark-mode .pagination-btn, body.dark-mode .filter-btn {
+        body.dark-mode .task-item:hover {
+            background: #2a2d30 !important;
+        }
+        body.dark-mode .task-item.completed {
+            background: #1a1d1f !important;
+        }
+        body.dark-mode .add-btn, 
+        body.dark-mode .pagination-btn, 
+        body.dark-mode .filter-btn {
             background: #23272a !important;
             color: #fff !important;
             border-color: #667eea !important;
         }
-        body.dark-mode .add-btn:hover, body.dark-mode .action-btn:hover, body.dark-mode #downloadReportBtn:hover, body.dark-mode .pagination-btn:hover, body.dark-mode .filter-btn:hover {
+        body.dark-mode .add-btn:hover, 
+        body.dark-mode .pagination-btn:hover, 
+        body.dark-mode .filter-btn:hover {
             background: #667eea !important;
             color: #fff !important;
         }
-        body.dark-mode .task-input, body.dark-mode .priority-select, body.dark-mode #searchInput, body.dark-mode #sortSelect {
+        body.dark-mode .filter-btn.active {
+            background: #667eea !important;
+            color: #fff !important;
+            border-color: #667eea !important;
+        }
+        body.dark-mode .task-input, 
+        body.dark-mode .priority-select, 
+        body.dark-mode #searchInput, 
+        body.dark-mode #sortSelect {
             background: #181a1b !important;
             color: #f1f1f1 !important;
             border-color: #444 !important;
@@ -375,21 +539,37 @@
         body.dark-mode .divider {
             border-top: 1.5px solid #333 !important;
         }
+        body.dark-mode .pagination-btn {
+            background: #23272a !important;
+            border-color: #444 !important;
+        }
+        body.dark-mode .pagination-btn.active {
+            background: #667eea !important;
+            border-color: #667eea !important;
+        }
+        body.dark-mode .pagination-info {
+            color: #ccc !important;
+        }
+        body.dark-mode .action-btn:hover {
+            background: #2a2d30 !important;
+        }
     </style>
 </head>
 <body>
     <nav class="navbar">
-        <h1 style="font-family: 'Montserrat', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">TaskMaster Pro Max X</h1>
-        <p>To-Do List Web Application</p>
-        <label class="toggle-switch" title="Toggle light/dark mode">
-            <input type="checkbox" id="themeToggle">
-            <span class="toggle-slider"></span>
-            <span id="themeLabel">Light</span>
-        </label>
+        <h1>TaskMaster Pro Max X</h1>
+        <div class="theme-controls">
+            <label class="switch" title="Toggle light/dark mode">
+                <input type="checkbox" id="themeToggle">
+                <span class="slider"></span>
+            </label>
+            <span class="switch-label" id="themeLabel">Light</span>
+        </div>
     </nav>
+    
     <div class="main-content">
         <div class="sidebar-left">
-            <div class="task-input-section">
+            <div class="card">
                 <div class="section-heading">Add Task</div>
                 <div class="input-group">
                     <input type="text" id="taskInput" class="task-input" placeholder="Enter your task..." maxlength="100" aria-label="Task input">
@@ -399,23 +579,28 @@
                         <option value="high">High Priority</option>
                     </select>
                     <button id="addTaskBtn" class="add-btn" aria-label="Add Task">
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" /></svg>
-                        Add
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" width="20" height="20">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                        </svg>
+                        Add Task
                     </button>
                 </div>
             </div>
         </div>
+        
         <div class="center-content">
             <div class="section-heading">Your Tasks</div>
             <div class="search-sort-bar">
                 <input type="text" id="searchInput" placeholder="Search tasks..." aria-label="Search tasks">
                 <select id="sortSelect" aria-label="Sort tasks">
-                    <option value="createdAt-desc">Newest</option>
-                    <option value="createdAt-asc">Oldest</option>
+                    <option value="createdAt-desc">Newest First</option>
+                    <option value="createdAt-asc">Oldest First</option>
                     <option value="priority-desc">Priority (High → Low)</option>
                     <option value="priority-asc">Priority (Low → High)</option>
-                    <option value="completed">Completed</option>
-                    <option value="pending">Pending</option>
+                    <option value="alphabetical-asc">A → Z</option>
+                    <option value="alphabetical-desc">Z → A</option>
+                    <option value="completed-first">Completed First</option>
+                    <option value="pending-first">Pending First</option>
                 </select>
             </div>
             <div class="tasks-container" id="tasksContainer">
@@ -426,38 +611,44 @@
             </div>
             <div id="pagination" class="pagination"></div>
         </div>
+        
         <div class="sidebar-right">
-            <div class="section-heading">Filters & Stats</div>
-            <div class="filters">
-                <button class="filter-btn active" data-filter="all">All Tasks</button>
-                <button class="filter-btn" data-filter="pending">Pending</button>
-                <button class="filter-btn" data-filter="completed">Completed</button>
-                <button class="filter-btn" data-filter="high">High Priority</button>
+            <div class="card">
+                <div class="section-heading">Filters & Stats</div>
+                <div class="filters">
+                    <button class="filter-btn active" data-filter="all">All Tasks</button>
+                    <button class="filter-btn" data-filter="pending">Pending</button>
+                    <button class="filter-btn" data-filter="completed">Completed</button>
+                    <button class="filter-btn" data-filter="high">High Priority</button>
+                    <button class="filter-btn" data-filter="medium">Medium Priority</button>
+                    <button class="filter-btn" data-filter="low">Low Priority</button>
+                </div>
+                <hr class="divider" />
+                <div class="stats">
+                    <div class="stat-card">
+                        <h3 id="totalTasks">0</h3>
+                        <p>Total Tasks</p>
+                    </div>
+                    <div class="stat-card">
+                        <h3 id="completedTasks">0</h3>
+                        <p>Completed</p>
+                    </div>
+                    <div class="stat-card">
+                        <h3 id="pendingTasks">0</h3>
+                        <p>Pending</p>
+                    </div>
+                    <div class="stat-card">
+                        <h3 id="completionRate">0%</h3>
+                        <p>Completion Rate</p>
+                    </div>
+                </div>
+                <hr class="divider" />
+                <button id="downloadReportBtn" class="download-btn" title="Download Report (PDF)" aria-label="Download Report">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" width="28" height="28">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                    </svg>
+                </button>
             </div>
-            <hr class="divider" />
-            <div class="stats">
-                <div class="stat-card">
-                    <h3 id="totalTasks">0</h3>
-                    <p>Total Tasks</p>
-                </div>
-                <div class="stat-card">
-                    <h3 id="completedTasks">0</h3>
-                    <p>Completed</p>
-                </div>
-                <div class="stat-card">
-                    <h3 id="pendingTasks">0</h3>
-                    <p>Pending</p>
-                </div>
-                <div class="stat-card">
-                    <h3 id="completionRate">0%</h3>
-                    <p>Completion Rate</p>
-                </div>
-            </div>
-            <hr class="divider" />
-            <button id="downloadReportBtn" class="add-btn" style="margin-top: 10px;" aria-label="Download Report">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" /></svg>
-                Download Report (PDF)
-            </button>
         </div>
     </div>
 
@@ -478,12 +669,16 @@
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script>
-        // Task Management System
+        // Enhanced Task Management System
         class TaskManager {
             constructor() {
                 this.tasks = JSON.parse(localStorage.getItem('tasks')) || [];
                 this.currentFilter = 'all';
+                this.currentSort = 'createdAt-desc';
+                this.searchQuery = '';
                 this.editingTaskId = null;
+                this.currentPage = 1;
+                this.tasksPerPage = 10;
                 this.initializeEventListeners();
                 this.render();
             }
@@ -493,6 +688,20 @@
                 document.getElementById('addTaskBtn').addEventListener('click', () => this.addTask());
                 document.getElementById('taskInput').addEventListener('keypress', (e) => {
                     if (e.key === 'Enter') this.addTask();
+                });
+
+                // Search functionality
+                document.getElementById('searchInput').addEventListener('input', (e) => {
+                    this.searchQuery = e.target.value.toLowerCase();
+                    this.currentPage = 1; // Reset to first page when searching
+                    this.render();
+                });
+
+                // Sort functionality
+                document.getElementById('sortSelect').addEventListener('change', (e) => {
+                    this.currentSort = e.target.value;
+                    this.currentPage = 1; // Reset to first page when sorting
+                    this.render();
                 });
 
                 // Filters
@@ -510,6 +719,26 @@
                         this.closeModal();
                     }
                 });
+
+                // Theme toggle
+                document.getElementById('themeToggle').addEventListener('change', (e) => {
+                    if (e.target.checked) {
+                        document.body.classList.add('dark-mode');
+                        document.getElementById('themeLabel').textContent = 'Dark';
+                        localStorage.setItem('darkMode', 'true');
+                    } else {
+                        document.body.classList.remove('dark-mode');
+                        document.getElementById('themeLabel').textContent = 'Light';
+                        localStorage.setItem('darkMode', 'false');
+                    }
+                });
+
+                // Load saved theme
+                if (localStorage.getItem('darkMode') === 'true') {
+                    document.body.classList.add('dark-mode');
+                    document.getElementById('themeToggle').checked = true;
+                    document.getElementById('themeLabel').textContent = 'Dark';
+                }
             }
 
             generateId() {
@@ -522,7 +751,7 @@
                 const text = input.value.trim();
 
                 if (!text) {
-                    alert('Please enter a task!');
+                    this.showNotification('Please enter a task!', 'error');
                     return;
                 }
 
@@ -538,8 +767,10 @@
                 this.tasks.unshift(task);
                 this.saveTasks();
                 input.value = '';
+                document.getElementById('prioritySelect').value = 'low';
+                this.currentPage = 1; // Reset to first page when adding
                 this.render();
-                this.showNotification('Task added successfully!');
+                this.showNotification('Task added successfully!', 'success');
             }
 
             toggleTask(id) {
@@ -549,7 +780,7 @@
                     task.completedAt = task.completed ? new Date().toISOString() : null;
                     this.saveTasks();
                     this.render();
-                    this.showNotification(task.completed ? 'Task completed!' : 'Task marked as pending');
+                    this.showNotification(task.completed ? 'Task completed! 🎉' : 'Task marked as pending', 'success');
                 }
             }
 
@@ -557,8 +788,13 @@
                 if (confirm('Are you sure you want to delete this task?')) {
                     this.tasks = this.tasks.filter(t => t.id !== id);
                     this.saveTasks();
+                    // Adjust current page if necessary
+                    const totalPages = this.getTotalPages();
+                    if (this.currentPage > totalPages && totalPages > 0) {
+                        this.currentPage = totalPages;
+                    }
                     this.render();
-                    this.showNotification('Task deleted successfully!');
+                    this.showNotification('Task deleted successfully!', 'success');
                 }
             }
 
@@ -577,7 +813,7 @@
                 const priority = document.getElementById('editPrioritySelect').value;
 
                 if (!text) {
-                    alert('Please enter a task!');
+                    this.showNotification('Please enter a task!', 'error');
                     return;
                 }
 
@@ -588,7 +824,7 @@
                     this.saveTasks();
                     this.render();
                     this.closeModal();
-                    this.showNotification('Task updated successfully!');
+                    this.showNotification('Task updated successfully!', 'success');
                 }
             }
 
@@ -603,46 +839,112 @@
                     btn.classList.remove('active');
                 });
                 document.querySelector(`[data-filter="${filter}"]`).classList.add('active');
+                this.currentPage = 1;
                 this.render();
             }
 
             getFilteredTasks() {
+                let filtered = this.tasks;
+                // Filter
                 switch (this.currentFilter) {
                     case 'completed':
-                        return this.tasks.filter(t => t.completed);
+                        filtered = filtered.filter(t => t.completed);
+                        break;
                     case 'pending':
-                        return this.tasks.filter(t => !t.completed);
+                        filtered = filtered.filter(t => !t.completed);
+                        break;
                     case 'high':
-                        return this.tasks.filter(t => t.priority === 'high');
+                        filtered = filtered.filter(t => t.priority === 'high');
+                        break;
+                    case 'medium':
+                        filtered = filtered.filter(t => t.priority === 'medium');
+                        break;
+                    case 'low':
+                        filtered = filtered.filter(t => t.priority === 'low');
+                        break;
                     default:
-                        return this.tasks;
+                        break;
+                }
+                // Search
+                if (this.searchQuery) {
+                    filtered = filtered.filter(t => t.text.toLowerCase().includes(this.searchQuery));
+                }
+                return filtered;
+            }
+
+            getSortedTasks(tasks) {
+                const sorted = [...tasks];
+                switch (this.currentSort) {
+                    case 'createdAt-asc':
+                        sorted.sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
+                        break;
+                    case 'createdAt-desc':
+                        sorted.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+                        break;
+                    case 'priority-desc':
+                        sorted.sort((a, b) => this.priorityValue(b.priority) - this.priorityValue(a.priority));
+                        break;
+                    case 'priority-asc':
+                        sorted.sort((a, b) => this.priorityValue(a.priority) - this.priorityValue(b.priority));
+                        break;
+                    case 'alphabetical-asc':
+                        sorted.sort((a, b) => a.text.localeCompare(b.text));
+                        break;
+                    case 'alphabetical-desc':
+                        sorted.sort((a, b) => b.text.localeCompare(a.text));
+                        break;
+                    case 'completed-first':
+                        sorted.sort((a, b) => (b.completed === a.completed) ? 0 : b.completed ? 1 : -1);
+                        break;
+                    case 'pending-first':
+                        sorted.sort((a, b) => (a.completed === b.completed) ? 0 : a.completed ? 1 : -1);
+                        break;
+                    default:
+                        break;
+                }
+                return sorted;
+            }
+
+            priorityValue(priority) {
+                switch (priority) {
+                    case 'high': return 3;
+                    case 'medium': return 2;
+                    case 'low': return 1;
+                    default: return 0;
                 }
             }
 
-            formatDate(dateString) {
-                return new Date(dateString).toLocaleDateString('en-US', {
-                    month: 'short',
-                    day: 'numeric',
-                    hour: '2-digit',
-                    minute: '2-digit'
-                });
+            getPaginatedTasks(tasks) {
+                const start = (this.currentPage - 1) * this.tasksPerPage;
+                return tasks.slice(start, start + this.tasksPerPage);
+            }
+
+            getTotalPages() {
+                const filtered = this.getFilteredTasks();
+                return Math.max(1, Math.ceil(filtered.length / this.tasksPerPage));
             }
 
             renderTasks() {
                 const container = document.getElementById('tasksContainer');
-                const filteredTasks = this.getFilteredTasks();
+                let filtered = this.getFilteredTasks();
+                filtered = this.getSortedTasks(filtered);
+                const totalTasks = filtered.length;
+                const totalPages = this.getTotalPages();
+                if (this.currentPage > totalPages) this.currentPage = totalPages;
+                const paginated = this.getPaginatedTasks(filtered);
 
-                if (filteredTasks.length === 0) {
+                if (paginated.length === 0) {
                     container.innerHTML = `
                         <div class="empty-state">
                             <h3>No tasks found!</h3>
-                            <p>${this.currentFilter === 'all' ? 'Add your first task to get started' : `No ${this.currentFilter} tasks found`}.</p>
+                            <p>${this.currentFilter === 'all' && !this.searchQuery ? 'Add your first task to get started' : 'Try adjusting your search, filter, or sort.'}</p>
                         </div>
                     `;
+                    this.renderPagination(0, 0, 0);
                     return;
                 }
 
-                container.innerHTML = filteredTasks.map(task => `
+                container.innerHTML = paginated.map(task => `
                     <div class="task-item ${task.completed ? 'completed' : ''}">
                         <input type="checkbox" class="task-checkbox" ${task.completed ? 'checked' : ''} 
                                onchange="taskManager.toggleTask('${task.id}')">
@@ -655,11 +957,45 @@
                             </div>
                         </div>
                         <div class="task-actions">
-                            <button class="action-btn edit-btn" onclick="taskManager.editTask('${task.id}')">Edit</button>
-                            <button class="action-btn delete-btn" onclick="taskManager.deleteTask('${task.id}')">Delete</button>
+                            <button class="action-btn edit-btn" title="Edit Task" onclick="taskManager.editTask('${task.id}')">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" width="20" height="20"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536M9 13l6.586-6.586a2 2 0 112.828 2.828L11.828 15.828a2 2 0 01-2.828 0L9 13zm0 0V17h4" /></svg>
+                            </button>
+                            <button class="action-btn delete-btn" title="Delete Task" onclick="taskManager.deleteTask('${task.id}')">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" width="20" height="20"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
+                            </button>
                         </div>
                     </div>
                 `).join('');
+                this.renderPagination(this.currentPage, totalPages, totalTasks);
+            }
+
+            renderPagination(current, total, totalTasks) {
+                const pag = document.getElementById('pagination');
+                if (total <= 1) {
+                    pag.innerHTML = '';
+                    return;
+                }
+                let html = '';
+                html += `<button class="pagination-btn" ${current === 1 ? 'disabled' : ''} onclick="taskManager.gotoPage(1)">&laquo;</button>`;
+                html += `<button class="pagination-btn" ${current === 1 ? 'disabled' : ''} onclick="taskManager.gotoPage(${current - 1})">&lsaquo;</button>`;
+                html += `<span class="pagination-info">Page ${current} of ${total} (${totalTasks} tasks)</span>`;
+                html += `<button class="pagination-btn" ${current === total ? 'disabled' : ''} onclick="taskManager.gotoPage(${current + 1})">&rsaquo;</button>`;
+                html += `<button class="pagination-btn" ${current === total ? 'disabled' : ''} onclick="taskManager.gotoPage(${total})">&raquo;</button>`;
+                pag.innerHTML = html;
+            }
+
+            gotoPage(page) {
+                this.currentPage = page;
+                this.render();
+            }
+
+            formatDate(dateString) {
+                return new Date(dateString).toLocaleDateString('en-US', {
+                    month: 'short',
+                    day: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit'
+                });
             }
 
             updateStats() {
@@ -683,19 +1019,20 @@
                 this.updateStats();
             }
 
-            showNotification(message) {
+            showNotification(message, type = 'success') {
                 // Simple notification system
                 const notification = document.createElement('div');
                 notification.style.cssText = `
                     position: fixed;
                     top: 20px;
                     right: 20px;
-                    background: #4caf50;
+                    background: ${type === 'error' ? '#e53935' : '#4caf50'};
                     color: white;
                     padding: 15px 20px;
                     border-radius: 5px;
                     z-index: 1001;
                     animation: slideInRight 0.3s ease-out;
+                    box-shadow: 0 2px 8px rgba(10,34,89,0.13);
                 `;
                 notification.textContent = message;
                 document.body.appendChild(notification);
@@ -715,9 +1052,9 @@
                     this.tasks = JSON.parse(jsonData);
                     this.saveTasks();
                     this.render();
-                    this.showNotification('Data imported successfully!');
+                    this.showNotification('Data imported successfully!', 'success');
                 } catch (error) {
-                    alert('Invalid data format!');
+                    this.showNotification('Invalid data format!', 'error');
                 }
             }
 
@@ -727,7 +1064,7 @@
                     this.tasks = [];
                     this.saveTasks();
                     this.render();
-                    this.showNotification('All tasks cleared!');
+                    this.showNotification('All tasks cleared!', 'success');
                 }
             }
 
@@ -755,11 +1092,8 @@
 
         // Initialize the application
         let taskManager;
-        
-        // Wait for DOM to be fully loaded
         document.addEventListener('DOMContentLoaded', function() {
             taskManager = new TaskManager();
-            
             // Add some sample data for demonstration (only if no existing data)
             if (taskManager.tasks.length === 0) {
                 const sampleTasks = [
@@ -767,12 +1101,10 @@
                     { id: 'sample2', text: 'Review and test application features', priority: 'medium', completed: true, createdAt: new Date(Date.now() - 86400000).toISOString(), completedAt: new Date().toISOString() },
                     { id: 'sample3', text: 'Prepare presentation slides', priority: 'medium', completed: false, createdAt: new Date(Date.now() - 172800000).toISOString(), completedAt: null }
                 ];
-                
                 taskManager.tasks = sampleTasks;
                 taskManager.saveTasks();
                 taskManager.render();
             }
-
             // PDF Report Download
             document.getElementById('downloadReportBtn').addEventListener('click', function() {
                 const stats = taskManager.getDetailedStats();
@@ -800,53 +1132,6 @@
                 });
                 doc.save('TaskMasterProMaxX_Report.pdf');
             });
-        });
-
-        // Add CSS animation for notifications
-        const style = document.createElement('style');
-        style.textContent = `
-            @keyframes slideInRight {
-                from {
-                    transform: translateX(100%);
-                    opacity: 0;
-                }
-                to {
-                    transform: translateX(0);
-                    opacity: 1;
-                }
-            }
-        `;
-        document.head.appendChild(style);
-
-        // Console commands for testing and debugging
-        window.debugTasks = {
-            export: () => taskManager.exportData(),
-            import: (data) => taskManager.importData(data),
-            clear: () => taskManager.clearAllTasks(),
-            stats: () => taskManager.getDetailedStats(),
-            addSample: () => {
-                taskManager.tasks.push({
-                    id: taskManager.generateId(),
-                    text: 'Sample Task ' + (taskManager.tasks.length + 1),
-                    priority: ['low', 'medium', 'high'][Math.floor(Math.random() * 3)],
-                    completed: Math.random() > 0.5,
-                    createdAt: new Date().toISOString(),
-                    completedAt: null
-                });
-                taskManager.saveTasks();
-                taskManager.render();
-            }
-        };
-
-        // Light/Dark Mode Toggle
-        document.getElementById('themeToggle').addEventListener('change', function(e) {
-            if (e.target.checked) {
-                document.body.classList.add('dark-mode');
-                document.getElementById('themeLabel').textContent = 'Dark';
-            } else {
-                document.body.classList.remove('dark-mode');
-                document.getElementById('themeLabel').textContent = 'Light';
-            }
         });
     </script>
 </body>
