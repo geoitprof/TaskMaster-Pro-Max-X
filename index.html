@@ -5,310 +5,292 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>TaskMaster Pro Max - To-Do List</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
+        /* CSS RESET */
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        html { font-size: 16px; }
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: #000080;
+            font-family: 'Segoe UI', 'Montserrat', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f4f7fa;
+            color: #222;
             min-height: 100vh;
-            padding: 20px;
         }
+        a { color: inherit; text-decoration: none; }
 
-        .container {
-            max-width: 900px;
+        /* NAVBAR */
+        nav.navbar {
+            width: 100vw;
+            background: #0a2259;
+            color: #fff;
+            padding: 0 32px;
+            height: 64px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 1002;
+            box-shadow: 0 2px 12px rgba(10,34,89,0.07);
+        }
+        nav.navbar h1 {
+            font-size: 1.7em;
+            font-family: 'Montserrat', 'Segoe UI', sans-serif;
+            font-weight: 700;
+            letter-spacing: 1px;
+        }
+        nav.navbar p {
+            font-size: 1em;
+            opacity: 0.8;
+            margin-left: 18px;
+        }
+        .toggle-switch { margin-left: 24px; }
+
+        /* LAYOUT */
+        .main-content {
+            display: flex;
+            gap: 32px;
+            padding: 96px 32px 32px 32px;
+            max-width: 1400px;
             margin: 0 auto;
-            background: white;
-            border-radius: 15px;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
-            overflow: hidden;
         }
-
-        .header {
-            background: linear-gradient(135deg, #2c3e50, #34495e);
-            color: white;
-            padding: 30px;
-            text-align: center;
-        }
-
-        .header h1 {
-            font-size: 2.5em;
-            margin-bottom: 10px;
-        }
-
-        .header p {
-            opacity: 0.9;
-            font-size: 1.1em;
-        }
-
-        .app-body {
-            padding: 30px;
-        }
-
-        .task-input-section {
-            background: #f8f9fa;
-            padding: 25px;
-            border-radius: 10px;
-            margin-bottom: 30px;
-            border-left: 5px solid #667eea;
-        }
-
-        .input-group {
+        .sidebar-left, .sidebar-right {
+            flex: 0 0 320px;
             display: flex;
-            gap: 15px;
-            margin-bottom: 15px;
-            flex-wrap: wrap;
+            flex-direction: column;
+            gap: 24px;
+        }
+        .sidebar-left { align-items: stretch; }
+        .sidebar-right { align-items: stretch; }
+        .center-content {
+            flex: 1 1 0;
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
         }
 
-        .task-input {
-            flex: 1;
-            padding: 12px 15px;
-            border: 2px solid #e1e5e9;
-            border-radius: 8px;
-            font-size: 16px;
-            transition: border-color 0.3s;
-            min-width: 200px;
+        /* CARDS */
+        .card {
+            background: #fff;
+            border-radius: 18px;
+            box-shadow: 0 2px 16px rgba(10,34,89,0.07);
+            padding: 28px 24px;
+            margin-bottom: 0;
         }
 
-        .task-input:focus {
-            outline: none;
-            border-color: #667eea;
-            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        /* SECTION HEADINGS */
+        .section-heading {
+            font-size: 1.2em;
+            font-weight: 700;
+            margin-bottom: 18px;
+            letter-spacing: 0.5px;
         }
-
-        .priority-select {
-            padding: 12px 15px;
-            border: 2px solid #e1e5e9;
-            border-radius: 8px;
-            background: white;
-            font-size: 16px;
-            cursor: pointer;
-        }
-
-        .add-btn {
-            background: #000080;
-            color: white;
+        .divider {
             border: none;
-            padding: 12px 25px;
+            border-top: 1.5px solid #e1e5e9;
+            margin: 18px 0 18px 0;
+        }
+
+        /* BUTTONS */
+        .add-btn, .action-btn, #downloadReportBtn, .pagination-btn, .filter-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-family: inherit;
+            background: #0a2259;
+            color: #fff;
+            border: none;
             border-radius: 8px;
-            cursor: pointer;
-            font-size: 16px;
+            padding: 10px 20px;
+            font-size: 1em;
             font-weight: 600;
-            transition: transform 0.2s, box-shadow 0.2s;
-        }
-
-        .add-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
-        }
-
-        .filters {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 20px;
-            flex-wrap: wrap;
-        }
-
-        .filter-btn {
-            padding: 8px 16px;
-            border: 2px solid #e1e5e9;
-            background: white;
-            border-radius: 20px;
             cursor: pointer;
-            transition: all 0.3s;
-            font-size: 14px;
+            transition: background 0.2s, color 0.2s, box-shadow 0.2s;
+            box-shadow: 0 2px 8px rgba(10,34,89,0.04);
+        }
+        .add-btn:hover, .action-btn:hover, #downloadReportBtn:hover, .pagination-btn:hover, .filter-btn:hover {
+            background: #1e3a8a;
+            color: #fff;
+        }
+        .filter-btn {
+            background: #eaf0fa;
+            color: #0a2259;
+            border: 1.5px solid #d1d9e6;
+            margin-right: 8px;
+            margin-bottom: 8px;
+            padding: 8px 16px;
+        }
+        .filter-btn.active, .filter-btn:active {
+            background: #0a2259;
+            color: #fff;
+            border-color: #0a2259;
         }
 
-        .filter-btn.active {
-            background: #667eea;
-            color: white;
-            border-color: #667eea;
+        /* INPUTS */
+        .task-input, .priority-select, #searchInput, #sortSelect {
+            border-radius: 8px;
+            border: 1.5px solid #d1d9e6;
+            padding: 12px 16px;
+            font-size: 1em;
+            margin-bottom: 0;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+        .task-input:focus, .priority-select:focus, #searchInput:focus, #sortSelect:focus {
+            border-color: #1e3a8a;
+            box-shadow: 0 0 0 2px #eaf0fa;
+            outline: none;
         }
 
-        .stats {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-            gap: 15px;
-            margin-bottom: 25px;
-        }
-
-        .stat-card {
-            background: #000080;
-            color: white;
-            padding: 20px;
-            border-radius: 10px;
-            text-align: center;
-        }
-
-        .stat-card h3 {
-            font-size: 2em;
-            margin-bottom: 5px;
-        }
-
-        .stat-card p {
-            opacity: 0.9;
-        }
-
+        /* TASKS */
         .tasks-container {
-            max-height: 500px;
+            background: #fff;
+            border-radius: 18px;
+            box-shadow: 0 2px 16px rgba(10,34,89,0.07);
+            padding: 0;
             overflow-y: auto;
-            border: 1px solid #e1e5e9;
-            border-radius: 10px;
+            min-height: 320px;
+            max-height: 60vh;
         }
-
         .task-item {
             display: flex;
             align-items: center;
-            padding: 20px;
-            border-bottom: 1px solid #e1e5e9;
-            transition: all 0.3s;
-            animation: slideIn 0.3s ease-out;
+            padding: 22px 24px;
+            border-bottom: 1.5px solid #f0f2f5;
+            transition: background 0.2s, opacity 0.2s, transform 0.2s;
+            animation: fadeInTask 0.4s;
         }
-
-        .task-item:hover {
-            background: #f8f9fa;
-        }
-
+        .task-item:last-child { border-bottom: none; }
         .task-item.completed {
             opacity: 0.6;
-            background: #f1f8ff;
+            background: #f4f7fa;
         }
-
         .task-checkbox {
-            width: 20px;
-            height: 20px;
-            margin-right: 15px;
+            width: 22px;
+            height: 22px;
+            margin-right: 18px;
+            accent-color: #1e3a8a;
             cursor: pointer;
-            accent-color: #667eea;
         }
-
         .task-content {
             flex: 1;
             display: flex;
             flex-direction: column;
             gap: 5px;
         }
-
         .task-text {
-            font-size: 16px;
+            font-size: 1.08em;
             font-weight: 500;
         }
-
         .task-text.completed {
             text-decoration: line-through;
         }
-
         .task-meta {
             display: flex;
             gap: 10px;
-            font-size: 12px;
+            font-size: 0.92em;
             color: #666;
         }
-
         .priority-badge {
-            padding: 2px 8px;
+            padding: 2px 10px;
             border-radius: 12px;
-            font-size: 11px;
+            font-size: 0.85em;
             font-weight: 600;
             text-transform: uppercase;
         }
-
         .priority-high {
-            background: #ffebee;
+            background: #ffe5e5;
             color: #c62828;
         }
-
         .priority-medium {
             background: #fff3e0;
             color: #ef6c00;
         }
-
         .priority-low {
             background: #e8f5e8;
             color: #2e7d32;
         }
-
         .task-actions {
             display: flex;
             gap: 10px;
         }
-
         .action-btn {
+            background: #eaf0fa;
+            color: #0a2259;
+            border: 1.5px solid #d1d9e6;
             padding: 8px 12px;
-            border: none;
             border-radius: 6px;
-            cursor: pointer;
-            font-size: 12px;
-            transition: all 0.2s;
+            font-size: 0.95em;
         }
+        .action-btn.edit-btn { background: #1e88e5; color: #fff; border: none; }
+        .action-btn.delete-btn { background: #e53935; color: #fff; border: none; }
+        .action-btn:hover { filter: brightness(0.95); }
 
-        .edit-btn {
-            background: #2196f3;
-            color: white;
+        /* STATS */
+        .stats {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
         }
-
-        .delete-btn {
-            background: #f44336;
-            color: white;
-        }
-
-        .action-btn:hover {
-            transform: scale(1.05);
-        }
-
-        .empty-state {
+        .stat-card {
+            background: #f4f7fa;
+            color: #0a2259;
+            padding: 18px 10px;
+            border-radius: 12px;
             text-align: center;
-            padding: 40px;
-            color: #666;
+            box-shadow: 0 1px 4px rgba(10,34,89,0.04);
+        }
+        .stat-card h3 {
+            font-size: 1.5em;
+            margin-bottom: 5px;
+        }
+        .stat-card p {
+            opacity: 0.9;
         }
 
-        .empty-state h3 {
-            margin-bottom: 10px;
-            color: #999;
+        /* PAGINATION */
+        .pagination {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+            margin: 20px 0 0 0;
+        }
+        .pagination-btn {
+            background: #eaf0fa;
+            color: #0a2259;
+            border: 1.5px solid #d1d9e6;
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-size: 1em;
+        }
+        .pagination-btn.active, .pagination-btn:hover {
+            background: #0a2259;
+            color: #fff;
+            border-color: #0a2259;
         }
 
-        @keyframes slideIn {
-            from {
-                opacity: 0;
-                transform: translateY(-10px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
+        /* MODAL */
         .modal {
             display: none;
             position: fixed;
             top: 0;
             left: 0;
-            width: 100%;
-            height: 100%;
+            width: 100vw;
+            height: 100vh;
             background: rgba(0,0,0,0.5);
             z-index: 1000;
         }
-
         .modal-content {
             position: absolute;
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            background: white;
+            background: #fff;
             padding: 30px;
-            border-radius: 10px;
+            border-radius: 12px;
             width: 90%;
             max-width: 400px;
         }
-
-        .modal h3 {
-            margin-bottom: 20px;
-            color: #2c3e50;
-        }
-
+        .modal h3 { margin-bottom: 20px; color: #0a2259; }
         .close {
             position: absolute;
             top: 10px;
@@ -318,51 +300,141 @@
             color: #999;
         }
 
-        @media (max-width: 768px) {
-            .input-group {
+        /* EMPTY STATE */
+        .empty-state {
+            text-align: center;
+            padding: 40px 10px;
+            color: #666;
+        }
+        .empty-state h3 {
+            margin-bottom: 10px;
+            color: #999;
+        }
+
+        /* ANIMATIONS */
+        @keyframes fadeInTask {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes fadeOutTask {
+            from { opacity: 1; transform: translateY(0); }
+            to { opacity: 0; transform: translateY(10px); }
+        }
+
+        /* RESPONSIVE */
+        @media (max-width: 1100px) {
+            .main-content {
                 flex-direction: column;
+                gap: 24px;
+                padding: 96px 8px 24px 8px;
             }
-            
-            .filters {
-                justify-content: center;
+            .sidebar-left, .sidebar-right {
+                flex: 1 1 100%;
+                max-width: 100%;
+                padding: 18px 8px;
             }
-            
-            .stats {
-                grid-template-columns: repeat(2, 1fr);
-            }
+        }
+        @media (max-width: 768px) {
+            nav.navbar { flex-direction: column; height: auto; padding: 12px 8px; }
+            .main-content { padding: 80px 2px 10px 2px; }
+            .sidebar-left, .sidebar-right, .center-content { padding: 10px 2px; }
+            .card, .tasks-container { padding: 10px 2px; }
+            .stats { grid-template-columns: 1fr; }
+        }
+        /* DARK MODE */
+        body.dark-mode {
+            background: #181a1b;
+            color: #f1f1f1;
+        }
+        body.dark-mode nav.navbar {
+            background: #10182f;
+            color: #fff;
+        }
+        body.dark-mode .card, body.dark-mode .tasks-container, body.dark-mode .modal-content {
+            background: #23272a !important;
+            color: #f1f1f1 !important;
+        }
+        body.dark-mode .stat-card {
+            background: #1a1d1f !important;
+            color: #f1f1f1 !important;
+        }
+        body.dark-mode .add-btn, body.dark-mode .action-btn, body.dark-mode #downloadReportBtn, body.dark-mode .pagination-btn, body.dark-mode .filter-btn {
+            background: #23272a !important;
+            color: #fff !important;
+            border-color: #667eea !important;
+        }
+        body.dark-mode .add-btn:hover, body.dark-mode .action-btn:hover, body.dark-mode #downloadReportBtn:hover, body.dark-mode .pagination-btn:hover, body.dark-mode .filter-btn:hover {
+            background: #667eea !important;
+            color: #fff !important;
+        }
+        body.dark-mode .task-input, body.dark-mode .priority-select, body.dark-mode #searchInput, body.dark-mode #sortSelect {
+            background: #181a1b !important;
+            color: #f1f1f1 !important;
+            border-color: #444 !important;
+        }
+        body.dark-mode .divider {
+            border-top: 1.5px solid #333 !important;
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="header">
-            <h1>TaskMaster Pro Max X</h1>
-            <p>To-Do List Web Application</p>
-        </div>
-        
-        <div class="app-body">
-            <!-- Task Input Section -->
+    <nav class="navbar">
+        <h1 style="font-family: 'Montserrat', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">TaskMaster Pro Max X</h1>
+        <p>To-Do List Web Application</p>
+        <label class="toggle-switch" title="Toggle light/dark mode">
+            <input type="checkbox" id="themeToggle">
+            <span class="toggle-slider"></span>
+            <span id="themeLabel">Light</span>
+        </label>
+    </nav>
+    <div class="main-content">
+        <div class="sidebar-left">
             <div class="task-input-section">
+                <div class="section-heading">Add Task</div>
                 <div class="input-group">
-                    <input type="text" id="taskInput" class="task-input" placeholder="Enter your task..." maxlength="100">
-                    <select id="prioritySelect" class="priority-select">
+                    <input type="text" id="taskInput" class="task-input" placeholder="Enter your task..." maxlength="100" aria-label="Task input">
+                    <select id="prioritySelect" class="priority-select" aria-label="Priority select">
                         <option value="low">Low Priority</option>
                         <option value="medium">Medium Priority</option>
                         <option value="high">High Priority</option>
                     </select>
-                    <button id="addTaskBtn" class="add-btn">Add Task</button>
+                    <button id="addTaskBtn" class="add-btn" aria-label="Add Task">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" /></svg>
+                        Add
+                    </button>
                 </div>
             </div>
-
-            <!-- Filters -->
+        </div>
+        <div class="center-content">
+            <div class="section-heading">Your Tasks</div>
+            <div class="search-sort-bar">
+                <input type="text" id="searchInput" placeholder="Search tasks..." aria-label="Search tasks">
+                <select id="sortSelect" aria-label="Sort tasks">
+                    <option value="createdAt-desc">Newest</option>
+                    <option value="createdAt-asc">Oldest</option>
+                    <option value="priority-desc">Priority (High → Low)</option>
+                    <option value="priority-asc">Priority (Low → High)</option>
+                    <option value="completed">Completed</option>
+                    <option value="pending">Pending</option>
+                </select>
+            </div>
+            <div class="tasks-container" id="tasksContainer">
+                <div class="empty-state">
+                    <h3>No tasks yet!</h3>
+                    <p>Add your first task to get started with productivity.</p>
+                </div>
+            </div>
+            <div id="pagination" class="pagination"></div>
+        </div>
+        <div class="sidebar-right">
+            <div class="section-heading">Filters & Stats</div>
             <div class="filters">
                 <button class="filter-btn active" data-filter="all">All Tasks</button>
                 <button class="filter-btn" data-filter="pending">Pending</button>
                 <button class="filter-btn" data-filter="completed">Completed</button>
                 <button class="filter-btn" data-filter="high">High Priority</button>
             </div>
-
-            <!-- Statistics -->
+            <hr class="divider" />
             <div class="stats">
                 <div class="stat-card">
                     <h3 id="totalTasks">0</h3>
@@ -381,14 +453,11 @@
                     <p>Completion Rate</p>
                 </div>
             </div>
-
-            <!-- Tasks Container -->
-            <div class="tasks-container" id="tasksContainer">
-                <div class="empty-state">
-                    <h3>No tasks yet!</h3>
-                    <p>Add your first task to get started with productivity.</p>
-                </div>
-            </div>
+            <hr class="divider" />
+            <button id="downloadReportBtn" class="add-btn" style="margin-top: 10px;" aria-label="Download Report">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" /></svg>
+                Download Report (PDF)
+            </button>
         </div>
     </div>
 
@@ -407,6 +476,7 @@
         </div>
     </div>
 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script>
         // Task Management System
         class TaskManager {
@@ -666,6 +736,7 @@
                 const total = this.tasks.length;
                 const completed = this.tasks.filter(t => t.completed).length;
                 const pending = total - completed;
+                const completionRate = total > 0 ? Math.round((completed / total) * 100) : 0;
                 const priorityStats = {
                     high: this.tasks.filter(t => t.priority === 'high').length,
                     medium: this.tasks.filter(t => t.priority === 'medium').length,
@@ -676,7 +747,7 @@
                     total,
                     completed,
                     pending,
-                    completionRate: total > 0 ? Math.round((completed / total) * 100) : 0,
+                    completionRate,
                     priorityStats
                 };
             }
@@ -701,6 +772,34 @@
                 taskManager.saveTasks();
                 taskManager.render();
             }
+
+            // PDF Report Download
+            document.getElementById('downloadReportBtn').addEventListener('click', function() {
+                const stats = taskManager.getDetailedStats();
+                const tasks = taskManager.tasks;
+                const doc = new window.jspdf.jsPDF();
+                let y = 15;
+                doc.setFontSize(18);
+                doc.text('TaskMaster Pro Max X - Report', 10, y);
+                y += 10;
+                doc.setFontSize(12);
+                doc.text(`Total Tasks: ${stats.total}`, 10, y);
+                y += 7;
+                doc.text(`Completed: ${stats.completed}`, 10, y);
+                y += 7;
+                doc.text(`Pending: ${stats.pending}`, 10, y);
+                y += 7;
+                doc.text(`Completion Rate: ${stats.completionRate}%`, 10, y);
+                y += 10;
+                doc.text('Tasks:', 10, y);
+                y += 7;
+                tasks.forEach((task, idx) => {
+                    if (y > 270) { doc.addPage(); y = 15; }
+                    doc.text(`${idx+1}. [${task.completed ? '✔' : ' '}] ${task.text} (${task.priority})`, 10, y);
+                    y += 7;
+                });
+                doc.save('TaskMasterProMaxX_Report.pdf');
+            });
         });
 
         // Add CSS animation for notifications
@@ -738,6 +837,17 @@
                 taskManager.render();
             }
         };
+
+        // Light/Dark Mode Toggle
+        document.getElementById('themeToggle').addEventListener('change', function(e) {
+            if (e.target.checked) {
+                document.body.classList.add('dark-mode');
+                document.getElementById('themeLabel').textContent = 'Dark';
+            } else {
+                document.body.classList.remove('dark-mode');
+                document.getElementById('themeLabel').textContent = 'Light';
+            }
+        });
     </script>
 </body>
 </html>
